@@ -1,0 +1,150 @@
+{
+  "annotations": {
+    "list": [
+      {
+        "builtIn": 1,
+        "datasource": {
+          "type": "grafana",
+          "uid": "-- Grafana --"
+        },
+        "enable": true,
+        "hide": true,
+        "iconColor": "rgba(0, 211, 255, 1)",
+        "name": "Annotations & Alerts",
+        "type": "dashboard"
+      }
+    ]
+  },
+  "editable": true,
+  "fiscalYearStartMonth": 0,
+  "graphTooltip": 0,
+  "id": 3,
+  "links": [],
+  "panels": [
+    {
+      "fieldConfig": {
+        "defaults": {},
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 0
+      },
+      "id": 3,
+      "options": {
+        "code": {
+          "language": "plaintext",
+          "showLineNumbers": false,
+          "showMiniMap": false
+        },
+        "content": "<a href=\"http://localhost:8084\" target=\"_blank\" style=\"font-size:16px;color:#00b7ff;text-decoration:none;\">\n  \ud83d\udd17 View Full Cytoscape Graph\n</a>\n",
+        "mode": "html"
+      },
+      "pluginVersion": "12.1.0",
+      "title": "Cytoscape",
+      "type": "text"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "eeq7d8d0i2g3kd"
+      },
+      "description": "",
+      "fieldConfig": {
+        "defaults": {},
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 8
+      },
+      "id": 2,
+      "options": {
+        "edges": {
+          "mainStatUnit": "s"
+        },
+        "layoutAlgorithm": "layered",
+        "nodes": {
+          "arcs": [
+            {
+              "color": "#808080",
+              "field": ""
+            }
+          ],
+          "mainStatUnit": "s"
+        },
+        "zoomMode": "cooperative"
+      },
+      "pluginVersion": "12.1.0",
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "eeq7d8d0i2g3kd"
+          },
+          "editorMode": "code",
+          "exemplar": false,
+          "expr": "label_replace(\n  avg by (id) (\n    label_replace(\n      quantile_over_time(0.95, fake_latency_seconds{direction=~\"fwd|rev\"}[5m]),\n      \"id\", \"$1\", \"source\", \"(.*)\"\n    )\n  or\n    label_replace(\n      quantile_over_time(0.95, fake_latency_seconds{direction=~\"fwd|rev\"}[5m]),\n      \"id\", \"$1\", \"target\", \"(.*)\"\n    )\n  ),\n  \"title\", \"$1\", \"id\", \"(.*)\"\n)\n",
+          "format": "table",
+          "hide": false,
+          "instant": true,
+          "interval": "",
+          "legendFormat": "value",
+          "range": false,
+          "refId": "nodes"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "eeq7d8d0i2g3kd"
+          },
+          "editorMode": "code",
+          "exemplar": false,
+          "expr": "label_replace(\n  label_replace(\n    label_join(\n      max by (source, target) (fake_latency_seconds{direction=\"fwd\"}),\n      \"id\", \"_\", \"source\", \"target\"\n    ),\n    \"id\", \"edge_fwd_${1}\", \"id\", \"(.*)\"\n  ),\n  \"__name__\", \"Value\", \"__name__\", \".*\"\n)\n",
+          "format": "table",
+          "hide": false,
+          "instant": true,
+          "legendFormat": "__auto",
+          "range": false,
+          "refId": "edges-forward"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "eeq7d8d0i2g3kd"
+          },
+          "editorMode": "code",
+          "exemplar": false,
+          "expr": "label_replace(\n  label_join(\n    max by (source, target) (fake_latency_seconds{direction=\"rev\"}),\n    \"id\", \"_\", \"source\", \"target\"\n  ),\n  \"id\", \"edge_rev_${1}\", \"id\", \"(.*)\"\n)\n",
+          "format": "table",
+          "hide": true,
+          "instant": true,
+          "legendFormat": "__auto",
+          "range": false,
+          "refId": "edges-reverse"
+        }
+      ],
+      "title": "Node Graph",
+      "type": "nodeGraph"
+    }
+  ],
+  "preload": false,
+  "schemaVersion": 41,
+  "tags": [],
+  "templating": {
+    "list": []
+  },
+  "time": {
+    "from": "now-5m",
+    "to": "now"
+  },
+  "timepicker": {},
+  "timezone": "browser",
+  "title": "Pipeline",
+  "uid": "e8cb960f-e8fb-49d7-866e-7d7329f5b398",
+  "version": 14
+}

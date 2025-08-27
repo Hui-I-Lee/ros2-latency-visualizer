@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <title>Cytoscape.js with Prometheus Latency</title>
+  <script src="https://unpkg.com/cytoscape@3.24.0/dist/cytoscape.min.js"></script>
+  <style>
+    body { font-family: sans-serif; margin: 0; background: #ffffff; }
+    #cy { width: 100vw; height: 100vh; display: block; }
+  </style>
+</head>
+<body>
+  <div id="cy"></div>
+  <script>
+    async function fetchLatencyData() {
+      const response = await fetch("http://localhost:9090/api/v1/query", {
+        method: "POST",
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        body: "query=fake_latency_seconds"
+      });
+      const data = await response.json();
+      return data.data.result;
+    }
+
+    function buildCytoscapeElements(results) {
+      const nodesSet = new Set();
+      const edgesMap = new Map();
+
+      for (const r of results) {
+        const { source, target, direction } = r.metric;
+        const latency = parseFloat(r.value[1]).toFixed(3);
+
+        nodesSet.add(source);
+        nodesSet.add(target);
+
+        const edgeKey = `${source}-${target}`;
+        const label = `${direction}: ${latency}s`;
+
+        if (!edgesMap.has(edgeKey)) {
+          edgesMap.set(edgeKey, { data: { id: edgeKey, source, target, label } });
+        } else {
+          // If already exists (reverse direction), merge labels
+          const existing = edgesMap.get(edgeKey);
+          existing.data.label += `\n${label}`;
+        }
+      }
+
+      const nodes = Array.from(nodesSet).map(n => ({
+        data: { id: n, label: n }
+      }));
+      const edges = Array.from(edgesMap.values());
+
+      return [...nodes, ...edges];
+    }
+
+    async function drawGraph() {
+      const results = await fetchLatencyData();
+      const elements = buildCytoscapeElements(results);
+
+      cytoscape({
+        container: document.getElementById('cy'),
+        elements,
+        style: [
+          {
+            selector: 'node',
+            style: {
+              'label': 'data(label)',
+              'text-valign': 'center',
+              'color': '#fff',
+              'background-color': '#007acc',
+              'text-outline-color': '#007acc',
+              'text-outline-width': 2,
+              'font-size': '14px'
+            }
+          },
+          {
+            selector: 'edge',
+            style: {
+              'curve-style': 'bezier',
+              'target-arrow-shape': 'triangle',
+              'width': 2,
+              'line-color': '#ccc',
+              'target-arrow-color': '#ccc',
+              'label': 'data(label)',
+              'font-size': '12px',
+              'text-wrap': 'wrap',
+              'text-max-width': 80,
+              'text-background-color': '#ffffff',
+              'text-background-opacity': 0.7,
+              'text-background-padding': 2
+            }
+          }
+        ],
+        layout: {
+          name: 'circle',
+          padding: 20
+        }
+      });
+    }
+
+    drawGraph();
+  </script>
+</body>
+</html>
