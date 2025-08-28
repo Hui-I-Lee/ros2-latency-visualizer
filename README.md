@@ -28,13 +28,13 @@ To address these challenges, this project provides a complete data pipeline and 
 -   **Use this for**: Complex node interactions and detailed analysis.
 
 ## 📁 Repository Contents  
-
+<pre><code>```bash ros2-latency-visualizer/ ├── README.md ├── LICENSE ├── .gitignore ├── dashboards/ │ └── grafana_latency_dashboard.json ├── scripts/ │ └── ros2_latency_injector.py ├── cyto/ │ └── index.html ```</code></pre>
 
 ## 🚀 Quick Start
 
 ### Prerequisites
 -   [Prometheus](https://prometheus.io/download/)
--   [Prometheus Pushgateway](https://github.com/prometheus/pushgateway)
+-   Pushgateway
 -   [Grafana](https://grafana.com/grafana/download)
 -   Python 3.x
 
@@ -54,9 +54,6 @@ scrape_configs:
 # Start Prometheus
 ./prometheus --config.file=prometheus.yml
 
-# Start Pushgateway
-./pushgateway
-
 # Start Grafana
 ./grafana-server
 ```
@@ -73,23 +70,38 @@ fake_latency_seconds{source="node-a",target="node-b",direction="fwd"} 0.267
 ### Step 4: Visualize
 
 #### Option 1: Native Grafana Dashboard
-1.  Start Grafana and log in (default: http://localhost:grafana_port)
+1.  Start Grafana and log in (default: http://localhost:port_for_full_graph)
 2.  Navigate to **Dashboards** → **New** → **Import**
-3.  Click **Upload JSON file** and select `grafana-dashboard-pipeline.json`
-4.  Select your Prometheus data source and click **Import**
+3.  Click **Upload JSON file** and select `grafana_latency_dashboard.json`
 
-#### Option 2: Enhanced Visualizer (Workaround) - *Recommended for complex topologies*
-1.  **Start the local server** in the directory which `index.html` is in:
+**⚠️ Fundamental Limitation of Grafana Node Graph**
+As noted in the [Challenge](#-the-challenge-grafana-node-graph-limitations), there are three main limitations. Among them, **only the bidirectional edge issue (A→B vs B→A) can be partially worked around**: Grafana will always collapse them into a single double-headed edge.  
+
+**Workaround for Partial Analysis**:
+-   The dashboard includes separate queries for forward (`direction="fwd"`) and reverse (`direction="rev"`) latency
+-   **Disable one query** (click the eye icon 👁️) to view only one direction at a time
+-   **Manually compare** the two views to understand bidirectional communication patterns
+
+> **Major Drawback**: You lose the ability to see both directions and their respective latency values simultaneously in context.
+
+#### Option 2: Enhanced Cytoscape.js Visualizer (Recommended) - *The Real Solution*
+1.  **Start the local server** in the `cyto` directory:
     ```bash
     cd cyto/
     python3 -m http.server port_for_full_graph  # Port can be customized
     ```
-2.  **Access from Grafana** ( seamless integration! ):
-    -   The imported dashboard includes a direct link to the visualizer
-    -   Simply click the **"View Full Cytoscapr Graph"** link in the dashboard
+2.  **Access from Grafana** (seamless integration!):
+    -   Click the **"View Full Cytoscape Graph"** link in the dashboard
+    -   Opens the enhanced visualizer in a new tab
 3.  **Or access directly** via browser: `http://localhost:port_for_full_graph`
 
-> **Why Option 2?** It solves Grafana's limitations: shows bidirectional edges, preserves complex topology, and displays latency values directly on edges.
+> **Why Option 2 is Essential**: It overcome's Grafana's core limitation by providing:
+> -   ✅ **True bidirectional visualization**: A→B and B→A displayed as separate, directed edges
+> -   ✅ **Simultaneous viewing**: Both directions visible at the same time with their respective latency values
+> -   ✅ **Complete topological context**: No information loss due to edge collapsing
+> -   ✅ **Interactive exploration**: Full control over the visualization
+
+**Recommendation**: Use Option 1 for quick checks within Grafana, but switch to Option 2 for any serious analysis of bidirectional communication patterns.
 
 ## 🔧 Using Your Own Data  
 To use real latency data, format your metrics to match this pattern:
