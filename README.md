@@ -28,7 +28,18 @@ To address these challenges, this project provides a complete data pipeline and 
 -   **Use this for**: Complex node interactions and detailed analysis.
 
 ## 📁 Repository Contents  
-<pre><code>```bash ros2-latency-visualizer/ ├── README.md ├── LICENSE ├── .gitignore ├── dashboards/ │ └── grafana_latency_dashboard.json ├── scripts/ │ └── ros2_latency_injector.py ├── cyto/ │ └── index.html ```</code></pre>
+```text
+ros2-latency-visualizer/
+├── README.md
+├── LICENSE
+├── .gitignore
+├── dashboards/
+│   └── grafana_latency_dashboard.json
+├── scripts/
+│   └── ros2_latency_injector.py
+├── cyto/
+│   └── index.html
+```
 
 ## 🚀 Quick Start
 
