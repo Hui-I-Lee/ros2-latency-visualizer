@@ -46,7 +46,7 @@ scrape_configs:
   - job_name: 'fake_latency_test'
     honor_labels: true
     static_configs:
-      - targets: ['localhost:9091']
+      - targets: ['localhost:pushgateway_port']
 ```
 
 ### Step 2: Run Services  
@@ -73,7 +73,7 @@ fake_latency_seconds{source="node-a",target="node-b",direction="fwd"} 0.267
 ### Step 4: Visualize
 
 #### Option 1: Native Grafana Dashboard
-1.  Start Grafana and log in (default: http://localhost:3000)
+1.  Start Grafana and log in (default: http://localhost:grafana_port)
 2.  Navigate to **Dashboards** → **New** → **Import**
 3.  Click **Upload JSON file** and select `grafana-dashboard-pipeline.json`
 4.  Select your Prometheus data source and click **Import**
@@ -82,16 +82,16 @@ fake_latency_seconds{source="node-a",target="node-b",direction="fwd"} 0.267
 1.  **Start the local server** in the directory which `index.html` is in:
     ```bash
     cd cyto/
-    python3 -m http.server 8083  # Port can be customized
+    python3 -m http.server port_for_full_graph  # Port can be customized
     ```
 2.  **Access from Grafana** ( seamless integration! ):
     -   The imported dashboard includes a direct link to the visualizer
     -   Simply click the **"View Full Cytoscapr Graph"** link in the dashboard
-3.  **Or access directly** via browser: `http://localhost:8083`
+3.  **Or access directly** via browser: `http://localhost:port_for_full_graph`
 
 > **Why Option 2?** It solves Grafana's limitations: shows bidirectional edges, preserves complex topology, and displays latency values directly on edges.
 
-## Using Your Own Data  
+## 🔧 Using Your Own Data  
 To use real latency data, format your metrics to match this pattern:
 ```python
 import requests
@@ -106,6 +106,27 @@ requests.put(
     data=payload
 )
 ```
-Replace the injector script with your own data pipeline that pushes metrics in this format.
+Replace the injector script with your own data pipeline that pushes metrics in this format.  
+
+## ⁉️ Troubleshooting
+
+-   **"No Data" in Grafana?**
+    -   Check if Prometheus is scraping the Pushgateway correctly.
+    -   Verify the job name (`fake_latency_test`) matches in your Prometheus config, Python script, and Grafana dashboard.
+
+-   **Cannot connect to Pushgateway?**
+    -   Ensure the Pushgateway service is running on `localhost:pushgateway_port`.
+    -   Check your firewall settings if accessing remotely.
+
+-   **Visualizer not loading?**
+    -   Make sure you started the HTTP server: `python3 -m http.server port_for_full_graph` in the `cyto` directory.
+    -   Check if the port (8083) is already in use by another application.
+
+-   **Metrics not updating?**
+    -   Ensure the `ros2_latency_injector.py` script is running and not encountering errors.
+    -   Check the Pushgateway logs for any ingestion issues.
+
+## 📄 License  
+MIT License. See LICENSE file.  
 
 
