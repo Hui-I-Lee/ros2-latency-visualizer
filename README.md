@@ -38,7 +38,7 @@ ros2-latency-visualizer/
 ├── scripts/
 │   └── ros2_latency_injector.py
 ├── cyto/
-│   └── index.html
+    └── index.html
 ```
 
 ## 🚀 Quick Start
