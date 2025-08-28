@@ -25,24 +25,43 @@ DEFAULT_INTERVAL_SECONDS = 10
 CUSTOM_LATENCY_DATA = None
 
 def generate_latency_metrics_from_nodes(node_list):
-    """Generate latency metrics between all pairs of nodes."""
+    """Generate directional latency metrics: a->b is fwd, b->a is rev."""
     lines = []
-    for i in range(len(node_list)):
-        for j in range(len(node_list)):
-            if i == j:
-                continue
-            src = node_list[i]
-            dst = node_list[j]
-            latency = round(random.uniform(0.05, 1.0), 3)
-            lines.append(f'fake_latency_seconds{{source="{src}",target="{dst}",direction="fwd"}} {latency}')
+    n = len(node_list)
+    for i in range(n):
+        for j in range(i + 1, n):
+            a = node_list[i]
+            b = node_list[j]
+            # independent values for each direction; tweak ranges as needed
+            fwd = round(random.uniform(0.05, 1.0), 3)
+            rev = round(random.uniform(0.05, 1.0), 3)
+            # a -> b (fwd)
+            lines.append(f'fake_latency_seconds{{source="{a}",target="{b}",direction="fwd"}} {fwd}')
+            # b -> a (rev)
+            lines.append(f'fake_latency_seconds{{source="{b}",target="{a}",direction="rev"}} {rev}')
     return '\n'.join(lines)
 
+
 def generate_latency_metrics_from_custom(data):
-    """Generate latency metrics from custom data."""
+    """
+    Generate latency metrics from custom data.
+    Accepts tuples of (src, dst, latency[, direction]).
+    If direction is omitted, emits two lines:
+      src->dst (fwd) and dst->src (rev) with the SAME latency unless you want to change it.
+    """
     lines = []
-    for src, dst, latency in data:
-        lines.append(f'fake_latency_seconds{{source="{src}",target="{dst}",direction="fwd"}} {latency}')
+    for row in data:
+        if len(row) == 4:
+            src, dst, latency, direction = row
+            lines.append(f'fake_latency_seconds{{source="{src}",target="{dst}",direction="{direction}"}} {latency}')
+        else:
+            src, dst, latency = row
+            # src -> dst (fwd)
+            lines.append(f'fake_latency_seconds{{source="{src}",target="{dst}",direction="fwd"}} {latency}')
+            # dst -> src (rev) — mirror same value (change if you prefer randomness)
+            lines.append(f'fake_latency_seconds{{source="{dst}",target="{src}",direction="rev"}} {latency}')
     return '\n'.join(lines)
+
 
 def push_to_gateway(payload: str, gateway_url: str):
     """Push metrics to Prometheus Pushgateway."""
