@@ -56,7 +56,33 @@ This makes it particularly valuable for developers dealing with **asymmetric lat
 
 ---
 
-# Example
+## Example  
 
-A sample script, `ros2_latency_injector.py`, is included to simulate latency metrics in the absence of real ROS 2 deployments. It pushes metrics to the Pushgateway in the following format:
+A sample script, `ros2_latency_injector.py`, is included to simulate latency metrics in the absence of real ROS 2 deployments.  
+
+The pipeline works as follows:
+
+1. The script pushes metrics to the **Prometheus Pushgateway**:  
+   ![Pushgateway Metrics](images/pushgateway.png)  
+
+2. **Prometheus** scrapes the metrics from the Pushgateway port:  
+   ![Prometheus Scraping](images/prometheus.png)  
+
+3. **Grafana** queries Prometheus to retrieve the metrics and render visualizations.  
+
+### Example Visualizations
+
+#### Grafana Node Graph Dashboard  
+
+- Forward direction (`fwd`):  
+  ![Grafana Forward Example](images/Grafana_forward.png)  
+
+- Reverse direction (`rev`):  
+  ![Grafana Reverse Example](images/Grafana_reverse.png)  
+
+#### Cytoscape.js Visualizer  
+
+- Both directions displayed simultaneously, with interactive exploration:  
+  ![Cytoscape Example](images/cytoscape.png)  
+
 
