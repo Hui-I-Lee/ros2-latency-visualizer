@@ -1,3 +1,23 @@
+---
+title: 'ROS 2 Latency Visualizer: A Prometheus-Compatible Pipeline for Visualizing ROS 2 Node Communication Latency'
+tags:
+  - ROS 2
+  - Prometheus
+  - Grafana
+  - Cytoscape.js
+  - latency visualization
+  - distributed systems
+authors:
+  - name: Hui-I Lee
+    orcid: 0009-0008-4586-4503
+    affiliation: 1
+affiliations:
+  - name: Independent Researcher
+    index: 1
+date: 2025-08-28
+bibliography: paper.bib
+---  
+
 # Summary
 
 Monitoring communication latency in distributed robotic systems is essential for diagnosing performance bottlenecks and ensuring reliable operation. The **ROS 2 Latency Visualizer** provides a lightweight and modular pipeline for visualizing latency between ROS 2 nodes, integrating with the Prometheus/Grafana observability stack and offering an alternative visualization frontend built with Cytoscape.js.
@@ -44,7 +64,7 @@ A partial workaround for Grafana’s directional limitation is supported: users 
 #### Option 2: Cytoscape.js Visualizer  
 To overcome the limitations of the native Grafana panel, a standalone **Cytoscape.js-based visualizer** is provided. It runs as a lightweight local web server and can be accessed directly, or linked from the Grafana dashboard.  
 
-### Why Option 2 is Essential  
+#### Why Option 2 is Essential  
 The Cytoscape.js frontend resolves Grafana’s structural limitations by offering:  
 
 - ✅ **True bidirectional visualization**: A→B and B→A appear as separate directed edges  
@@ -56,33 +76,58 @@ This makes it particularly valuable for developers dealing with **asymmetric lat
 
 ---
 
-## Example  
+### Example  
 
 A sample script, `ros2_latency_injector.py`, is included to simulate latency metrics in the absence of real ROS 2 deployments.  
 
 The pipeline works as follows:
 
 1. The script pushes metrics to the **Prometheus Pushgateway**:  
-   ![Pushgateway Metrics](images/pushgateway.png)  
+   <img src="images/pushgateway.png" alt="Pushgateway Metrics" width="450"/>
 
 2. **Prometheus** scrapes the metrics from the Pushgateway port:  
-   ![Prometheus Scraping](images/prometheus.png)  
+   <img src="images/prometheus.png" alt="Prometheus Scraping" width="450"/> 
 
 3. **Grafana** queries Prometheus to retrieve the metrics and render visualizations.  
 
-### Example Visualizations
+### Visualizations
 
 #### Grafana Node Graph Dashboard  
 
 - Forward direction (`fwd`):  
-  ![Grafana Forward Example](images/Grafana_forward.png)  
+  <img src="images/Grafana_forward.png" alt="Grafana Forward Example" width="400"/> 
 
 - Reverse direction (`rev`):  
-  ![Grafana Reverse Example](images/Grafana_reverse.png)  
+  <img src="images/Grafana_reverse.png" alt="Grafana Reverse Example" width="400"/> 
 
 #### Cytoscape.js Visualizer  
 
 - Both directions displayed simultaneously, with interactive exploration:  
-  ![Cytoscape Example](images/cytoscape.png)  
+  <img src="images/cytoscape.png" alt="Cytoscape Example" width="500"/>
+
+### Future Work  
+While the current implementation focuses on static inter-node latency measurements using a simulated or periodically pushed dataset, several promising extensions are planned:
+
+- **Live ROS 2 Integration**: Direct integration with `rclpy` or `rclcpp` nodes to extract real latency metrics from actual ROS 2 message traffic.
+- **Time-Series Tracking**: Enabling temporal analysis of latency changes over time, with Grafana panels showing historical latency trends.
+- **Pod-to-Pod and Cloud-to-Edge Monitoring**: Applying the same pipeline in Kubernetes-based ROS 2 deployments, useful for cloud robotics and fog computing setups.
+- **Alerting and Threshold Rules**: Supporting Prometheus alert rules and Grafana annotations to flag abnormal latency spikes or drops.
+- **Topology-Aware Layouts**: Enhancing the Cytoscape.js visualizer to reflect physical or logical network structures (e.g., by namespace or domain).
+
+These additions would help generalize the visualizer as a more comprehensive performance tool for real-time, distributed robotics systems.
+
+  
+# Acknowledgements
+The author would like to thank the ROS 2, Prometheus, and Grafana open-source communities for providing the underlying infrastructure, as well as the Cytoscape.js project for enabling lightweight graph-based rendering in web browsers.  
+
+# References
+
+- ROS 2: Robot Operating System. [https://docs.ros.org/en/rolling/index.html](https://docs.ros.org/en/rolling/index.html). Accessed: 2025-08-28.
+- Prometheus Monitoring. [https://prometheus.io/](https://prometheus.io/). Accessed: 2025-08-28.
+- Grafana Observability Platform. [https://grafana.com/](https://grafana.com/). Accessed: 2025-08-28.
+- Cytoscape.js Graph Theory Library. [https://js.cytoscape.org/](https://js.cytoscape.org/). Accessed: 2025-08-28.
+
+
+
 
 
