@@ -1,0 +1,12 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite it as below."
+title: "ROS 2 Latency Visualizer: A Prometheus-Compatible Pipeline for Visualizing ROS 2 Node Communication Latency"
+authors:
+  - family-names: Lee
+    given-names: Hui-I
+    orcid: https://orcid.org/0009-0008-4586-4503
+date-released: 2025-08-28
+version: "1.0.0"
+repository-code: https://github.com/Hui-I-Lee/ros2-latency-visualizer
+license: MIT
+
