@@ -1,22 +1,22 @@
-# ---
-# title: 'ROS 2 Latency Visualizer: A Prometheus-Compatible Pipeline for Visualizing ROS 2 Node Communication Latency'
-# tags:
-#   - ROS 2
-#   - Prometheus
-#   - Grafana
-#   - Cytoscape.js
-#   - latency visualization
-#   - distributed systems
-# authors:
-#   - name: Hui-I Lee
-#     orcid: 0009-0008-4586-4503
-#     affiliation: 1
-# affiliations:
-#   - name: Independent Researcher
-#     index: 1
-# date: 2025-08-28
-# bibliography: paper.bib
-# ---
+---
+title: 'ROS 2 Latency Visualizer: A Prometheus-Compatible Pipeline for Visualizing ROS 2 Node Communication Latency'
+tags:
+  - ROS 2
+  - Prometheus
+  - Grafana
+  - Cytoscape.js
+  - latency visualization
+  - distributed systems
+authors:
+  - name: Hui-I Lee
+    orcid: 0009-0008-4586-4503
+    affiliation: 1
+affiliations:
+  - name: Independent Researcher
+    index: 1
+date: 2025-08-28
+bibliography: paper.bib
+---
 
 # Summary
 
